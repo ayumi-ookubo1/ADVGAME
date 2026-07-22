@@ -1,0 +1,193 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.silkscreen-regular {
+  font-family: "Silkscreen", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.silkscreen-bold {
+  font-family: "Silkscreen", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.nosifer-regular {
+  font-family: "Nosifer", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.dotgothic16-regular {
+  font-family: "DotGothic16", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.title{
+    color: red;
+    height: 100vh;
+    cursor: pointer;
+    /* 真ん中にする */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 縦で並ばせる */
+    flex-direction: column;
+    gap: 20px;
+    font-family:"nosifer", "DotGothic16",sans-serif;
+}
+
+body{
+    background-color: black;
+    /* 縦横真ん中にする */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    font-family: "Silkscreen", sans-serif;
+}
+/* login.php */
+.wrapper{
+    width: 420px;
+    color: aliceblue;
+    background: transparent;
+    border-radius: 10px;
+    padding: 30px 40px;
+}
+
+.wrapper h1{
+    font-size: 36px;
+    text-align: center;
+    color: aliceblue;
+}
+
+.wrapper .input-box{
+    position: relative;
+    width: 100%;
+    height: 50px;
+    margin: 30px 0;
+}
+
+/* 文字打つ時の見た目 */
+.input-box input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    border: 2px solid rgb(255, 255, 255,2);
+    border-radius: 15px;
+    font-size: 16px;
+    color: white;
+    padding: 20px 45px 20px 20px;
+    font-family: "Silkscreen", sans-serif;
+}
+
+.wrapper .btn{
+    width: 100%;
+    height: 45px;
+    font-family: "Silkscreen", sans-serif;
+}
+
+.prologue-panel {
+    position: relative;
+    width: min(720px, calc(100vw - 40px));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes blink {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* プロローグ画面 */
+/* 画面全体のサイズをプロローグと同じ1280x720 */
+.gamestage {
+    background-image: url('images/map2.png');
+    width: 1280px;
+    height: 720px;
+    position: relative;
+    overflow: hidden;
+}
+/* セリフ枠全体 */
+.game-window {
+    position:absolute;
+    bottom: -40px;
+    left:50%;
+    right:70px;
+    width: 980px;
+    height: 180px;
+    background-image:url(images/horror1.png);
+    transform: translateX(-50%);
+    background-size: 100% 100%;
+    background-repeat:no-repeat;
+    z-index: 10;
+}
+#message-window{
+    display:none;
+}
+/* 名前枠 */
+.game-name-box{
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    width: 200px;
+    height: 45px;
+    background-size:100% 100%;
+    background-repeat: no-repeat;
+    color: rgb(255, 255, 255);
+    font-family: 'DotGothic16', sans-serif;
+    text-align: center;
+    line-height: 45px;
+    font-size: 20px;
+    font-weight: bold;
+}
+/* 本編の文字が出る箱 */
+.game-message-box{
+    color: white;
+    padding: 45px 60px 20px 40px;
+    font-size: 24px;
+    font-family: 'DotGothic16', sans-serif;
+    line-height: 1.6;
+    position: relative;
+}
+
+/* 本編の矢印の位置 */
+.next-arrow{
+    display: none;       /* 最初は隠す */
+    position: absolute;  /* セリフ枠の右下を基準にする */
+    bottom: -15px!important;     /*セリフ枠の下から -5px */
+    right: 20px;         /* セリフ枠の右から 30px 内側 */
+    width: auto;         /*プロローグの三角形(width:0)のルールをリセット */
+    height: auto;        /*プロローグの三角形(height:0)のルールをリセット */
+    border: none;        /*プロローグの border で作る三角形を消す */
+    color: white;         /* 文字の色を白にする */ 
+    font-size: 24px;     /*▼ の大きさ */
+    z-index: 999;
+    animation: blink 1.2s infinite alternate;/* 点滅 */
+}
+/* キャラ初期配置 */
+.stage-chara{
+    position: absolute;
+    left: 145px; /* 初期位置 */
+    top: 520px;
+    z-index: 5;
+    height: 200px;
+    width: auto;
+    transform: translateX(-50%);
+}
+/* 黒いキャラの配置 */
+.stage1-help{
+    position: absolute;
+    right: 330px;
+    top: 80px;
+    z-index: 4;
+    width: auto;
+    height: 200px;
+}
