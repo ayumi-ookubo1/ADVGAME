@@ -1,4 +1,4 @@
-<!-- http://localhost/mygame/title.php で開く-->
+<!-- http://localhost/mygame/ADVGAME/title.php で開く-->
 <?php
 // ページの切り替え設定
 $page = $_GET["page"] ?? "title";
@@ -11,14 +11,8 @@ $page = $_GET["page"] ?? "title";
     <title>あの日をもう一度</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- クリック -->
-    <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <!-- メインタイトル -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Nosifer&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Nosifer&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <?php if($page === "title"): ?>
@@ -48,7 +42,6 @@ $page = $_GET["page"] ?? "title";
         </div>
         
         <script src="script.js"></script>
-        
 
     <?php elseif ($page === "gamestart1"): ?>
         <div class="gamestage" tabindex="0">
@@ -62,6 +55,15 @@ $page = $_GET["page"] ?? "title";
             </div>
 
             <img src="images/help1.png" class="stage1-help" alt="???">
+            <div id="itemPopup" class="hidden">
+                <img id="itemImage" src="">
+                <div id="itemCloseBtn" class="item-close-btn">×</div>
+            </div>
+            <!-- ハンバーガーメニュー直書き -->
+            <div id="menuBtn" class="menu-btn">☰</div>
+                <div id="inventoryPanel" class="inventory-panel hidden">
+                <div id="inventoryList"></div>
+            </div>
         </div>
 
          

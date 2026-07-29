@@ -47,20 +47,109 @@ function blockstagearea() {
 const locker=[
     {
         x:0,y:0,width:110,height:150,
-        message:"",
+        message:["開かない..."],
+        items:null,
+        got:false,
+        gotMessage:false 
     },
-    {x:110,y:0,width:110,height:150},
-    {x:220,y:0,width:110,height:150},
-    {x:330,y:0,width:110,height:150},
-    {x:440,y:0,width:110,height:150},
-    {x:550,y:0,width:110,height:150},
-    {x:660,y:0,width:110,height:150},
-    {x:770,y:0,width:110,height:150},
+    {
+        x:110,y:0,width:110,height:150,
+        message:["開かない..."],
+        items:null,
+        got:false,
+        gotMessage:false 
+    },
+    {
+        x:220,y:0,width:110,height:150,
+        message:["開かない..."],
+        items:null,
+        got:false,
+        gotMessage:false 
+    },
+    {
+        x:330,y:0,width:110,height:150,
+        message:["ん？何か入ってる!"],
+        items:"Indoor_shoes",
+        got:false,
+        gotMessage:false 
+    },
+    {
+        x:440,y:0,width:110,height:150,
+        message:["開かない..."],
+        items:null,
+        got:false,
+        gotMessage:false 
+    },
+    {
+        x:550,y:0,width:110,height:150,
+        message:["開かない..."],
+        items:null,
+        got:false,
+        gotMessage:false 
+    },
+    {
+        x:660,y:0,width:110,height:150,
+        message:["開かない..."],
+        items:null,
+        got:false,
+        gotMessage:false 
+    },
+    {
+        x:770,y:0,width:110,height:150,
+        message:["開かない..."],
+        items:null,
+        got:false,
+        gotMessage:false 
+    },
 ];
 
-const lockermessage=[
+function checkLockerHit() {
+    for (let i = 0; i < locker.length; i++) {
+        const L = locker[i];
 
-]
+        const hit =
+            player.x < L.x + L.width &&
+            player.x + player.width > L.x &&
+            player.y < L.y + L.height &&
+            player.y + player.height > L.y;
+
+        if (hit) return i;
+    }
+    return -1;
+}
+
+function handleLockerInteract(){
+    const index=checkLockerHit();
+    if(index===-1)return;
+
+    const L=locker[index];
+
+    // アイテムが入っていて、まだとっていない場合
+    if(L.items&& !L.got){
+        L.got = true;
+        L.gotMessage = true;
+
+        console.log("アイテム取得処理開始",L.items);
+
+        const displayName=getItemName(L.items);
+        const getMsg = `「${displayName}」を手に入れた。`;
+
+        if(!player.items.includes(L.items)){
+            player.items.push(L.items);
+            saveInventory();
+        }  
+        
+        showMessage([...L.message, getMsg],()=>{
+            showItemImage("images/"+L.items+".png");
+        }); 
+        return;
+
+    }
+    if(!L.gotMessage){
+        L.gotMessage = true;
+        showMessage(L.message);
+    }
+}
 
 
 
