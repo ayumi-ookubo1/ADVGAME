@@ -55,15 +55,18 @@ $page = $_GET["page"] ?? "title";
             </div>
 
             <img src="images/help1.png" class="stage1-help" alt="???">
+
             <div id="itemPopup" class="hidden">
                 <img id="itemImage" src="">
                 <div id="itemCloseBtn" class="item-close-btn">×</div>
+
+                <!-- 捨てるか取っておくかの選択肢のボタン -->
+                <div class="item-choice-btn">
+                    <button id="keepbtn">とっておく</button>
+                    <button id="discardbtn">すてる</button>
+                </div>
             </div>
-            <!-- ハンバーガーメニュー直書き -->
-            <div id="menuBtn" class="menu-btn">☰</div>
-                <div id="inventoryPanel" class="inventory-panel hidden">
-                <div id="inventoryList"></div>
-            </div>
+
         </div>
 
          

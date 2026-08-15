@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 function initCommon(){
     console.log("共通処理開始");
-    loadInventory();
+    // loadInventory();
     setupMessageSystem();     
     setupPlayer();
     setupKeyInput();
@@ -239,23 +239,25 @@ const itemName={
     "Indoor_shoes":"汚れた上履き",
 };
 
-// アイテムの説明文
-const itemDescriptions={
-    "Indoor_shoes":"誰かの上履き。底がすり減っている。",
-};
-
 // itemNameの中身を返す
 function getItemName(itemkey){
     return itemName[itemkey]|| itemkey;
 }
 
-// アイテムのリストに保存復元
+// 選択肢を保存
 function saveInventory(){
     localStorage.setItem("playerItems", JSON.stringify(player.items));
 }
 function loadInventory(){
     player.items = JSON.parse(localStorage.getItem("playerItems") || "[]");
 }
+// // アイテムのリストに保存復元
+// function saveInventory(){
+//     localStorage.setItem("playerItems", JSON.stringify(player.items));
+// }
+// function loadInventory(){
+//     player.items = JSON.parse(localStorage.getItem("playerItems") || "[]");
+// }
 
 // itemPopupを閉じる
 function closePopup(){
@@ -266,6 +268,28 @@ document.addEventListener("DOMContentLoaded",()=>{
     const closeBtn=document.getElementById("itemCloseBtn");
     if(closeBtn){
         closeBtn.addEventListener("click",closePopup);
+    }
+
+    // 画像の下に選択肢ボタン
+    const keepBtn=document.getElementById("keepbtn");
+    const discardBtn = document.getElementById("discardbtn");
+
+    if(keepBtn){
+        keepBtn.addEventListener('click',()=>{
+            score+=1;
+            localStorage.setItem("score",score);
+            console.log("とっておくを選択。現在のスコア：",score);
+            closePopup();
+        });
+    }
+
+    if(discardBtn){
+        discardBtn.addEventListener("click",()=>{
+            score-=1;
+            localStorage.setItem("score",score);
+            console.log("捨てるを選択。現在のスコア：",score);
+            closePopup();
+        });
     }
 });
 
@@ -294,73 +318,4 @@ async function initPrologue(){
     console.log("prologuestart!");
     const lines=await loadText("Prologue");
     showMessage(lines);
-}
-
-// ☰ボタンを押したら持ち物パネルの表示/非表示を切り替える
-document.addEventListener("DOMContentLoaded", ()=>{
-    const menuBtn = document.getElementById("menuBtn");
-    if(menuBtn){
-        menuBtn.addEventListener("click", ()=>{
-            document.getElementById("inventoryPanel").classList.toggle("hidden");
-            renderInventory();
-        });
-    }
-});
-
-// アイテムの説明文を取得
-function getItemDescription(itemkey){
-    return itemDescriptions[itemkey] || "";
-}
-
-// 持ち物一覧を画面に描く（よくわからんからクラウドに丸投げ）
-function renderInventory(){
-    const listEl = document.getElementById("inventoryList");
-    listEl.innerHTML = "";
-
-    if(player.items.length === 0){
-        listEl.innerHTML = "<p>何も持っていない</p>";
-        return;
-    }
-
-    player.items.forEach((itemKey)=>{
-        const decision = getItemDecision(itemKey);
-
-        const row = document.createElement("div");
-        row.className = "inventory-item";
-        row.innerHTML = `
-            <img src="images/${itemKey}.png" class="inventory-item-img">
-            <span class="inventory-item-name">${getItemName(itemKey)}</span>
-            <p class="inventory-item-desc">${getItemDescription(itemKey)}</p>
-            <button class="keepBtn" ${decision ? "disabled" : ""}>とっておく</button>
-            <button class="discardBtn" ${decision ? "disabled" : ""}>すてる</button>
-        `;
-        row.querySelector(".keepBtn").addEventListener("click", ()=> decideItem(itemKey, "keep"));
-        row.querySelector(".discardBtn").addEventListener("click", ()=> decideItem(itemKey, "discard"));
-
-        listEl.appendChild(row);
-    });
-}
-
-// とる/すてるボタンが押されたときの処理
-function decideItem(itemKey, decision){
-    if(getItemDecision(itemKey)) return;
-
-    score += (decision === "keep") ? 1 : -1;
-    saveItemDecision(itemKey, decision);
-    localStorage.setItem("score", score);
-
-    renderInventory();
-}
-
-// 選択結果を保存
-function saveItemDecision(itemKey, decision){
-    const data = JSON.parse(localStorage.getItem("itemDecisions") || "{}");
-    data[itemKey] = decision;
-    localStorage.setItem("itemDecisions", JSON.stringify(data));
-}
-
-// 選択結果を読み込み
-function getItemDecision(itemKey){
-    const data = JSON.parse(localStorage.getItem("itemDecisions") || "{}");
-    return data[itemKey] || null;
 }
