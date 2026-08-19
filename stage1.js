@@ -118,7 +118,23 @@ function checkLockerHit() {
     return -1;
 }
 
+// ストーリー上ドアを調べてからロッカーを調べてもらいたいのでドアを先に確認させる
+let doorchecked=false;
+
 function handleLockerInteract(){
+    if(cheakDoorHit()){
+        if(!doorchecked){
+            doorchecked=true;// door調べたことを確認
+            showMessage(exitDoor.message);
+        }
+        return;
+    }
+
+    // ↓ドアをまだ調べていなければ、ロッカーは反応させない
+    if(!doorchecked){
+        return;
+    }
+
     const index=checkLockerHit();
     if(index===-1)return;
 
@@ -128,6 +144,8 @@ function handleLockerInteract(){
     if(L.items&& !L.got){
         L.got = true;
         L.gotMessage = true;
+
+        rokkaSound("sounds/ロッカーを開ける2.mp3");
 
         console.log("アイテム取得処理開始",L.items);
 
@@ -151,5 +169,26 @@ function handleLockerInteract(){
     }
 }
 
+// 水色のマット（入口）
+const exitDoor={
+    x: 0, y: 330, width: 90, height: 130,
+    message: ["あれ？鍵が壊れてて出られない！",
+        "困ったな...とりあえずここ以外で出られる方法を探すか"
+    ]
+}
 
+function cheakDoorHit(){
+    const hit=
+        player.x<exitDoor.x+exitDoor.width&&
+        player.x+player.width>exitDoor.x&&
+        player.y<exitDoor.y+exitDoor.height&&
+        player.y+player.height>exitDoor.y;
+    return hit;
+}
 
+// ↓確認用。終わったら削除する
+window.addEventListener("keydown",(e)=>{
+    if(e.key === "p"){
+        console.log("player.x:", player.x, "player.y:", player.y);
+    }
+});

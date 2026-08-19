@@ -92,18 +92,17 @@ body{
     width: 1280px;
     height: 720px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 /* セリフ枠全体 */
 .game-window {
     position:absolute;
-    bottom: -40px;
-    left:50%;
-    right:70px;
+    bottom: -190px;
+    left:0;
     width: 980px;
     height: 180px;
     background-image:url(images/horror1.png);
-    transform: translateX(-50%);
+    background-color: black;
     background-size: 100% 100%;
     background-repeat:no-repeat;
     z-index: 10;

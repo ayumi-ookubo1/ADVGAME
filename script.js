@@ -9,6 +9,19 @@ let isMessageActive = false;   // メッセージウィンドウが開いてる�
 let onMessageEnd = null;
 // score/itemsはページ移動しても消えないようlocalStorageから復元
 let score = Number(localStorage.getItem("score") || 0);
+// BGM
+let BGMAudio=null;
+
+function playAudio(src,volume=0.3){
+    if(BGMAudio){
+        BGMAudio.pause();
+    }  // すでに同じ曲が流れていたら鳴らしなおさない
+
+    BGMAudio=new Audio(src);
+    BGMAudio.loop=true;
+    BGMAudio.volume=volume;
+    BGMAudio.play();
+}
 
 const player={
     x:145,
@@ -35,6 +48,7 @@ function initCommon(){
     setupKeyInput();
     startGameLoop();
 
+    playAudio("sounds/Carol_of_the_Bell.mp3");
     // phpファイルのURLで判断して自動でステージ移動する
     const page=new URLSearchParams(location.search).get("page");
 
@@ -238,6 +252,12 @@ function showItemImage(src){
 const itemName={
     "Indoor_shoes":"汚れた上履き",
 };
+
+// ロッカーの開けた時の音
+function rokkaSound(src){
+    const audio=new Audio(src);
+    audio.play();
+}
 
 // itemNameの中身を返す
 function getItemName(itemkey){
