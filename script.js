@@ -9,6 +9,8 @@ let isMessageActive = false;   // メッセージウィンドウが開いてる�
 let onMessageEnd = null;
 // score/itemsはページ移動しても消えないようlocalStorageから復元
 let score = Number(localStorage.getItem("score") || 0);
+// 黒い人物
+let itemDecided=false;
 // BGM
 let BGMAudio=null;
 
@@ -95,7 +97,7 @@ function setupKeyInput() {
 
 // ===メッセージ処理===
 // メッセージ開始&初期化＆1文字ずつ表示の開始
-function showMessage(messageArray,callback){
+function showMessage(messageArray,callback,speakerName){
     const windowEl = document.getElementById('message-window');
     const boxEl = document.getElementById('prologue-message-box') ||
                   document.getElementById('game-message-box');
@@ -104,6 +106,11 @@ function showMessage(messageArray,callback){
 
     clearTimeout(typeTimeout);// 前のメッセージのタイピングが残ってると困るのでそれをリセット
 
+    // 話者名を引き渡す
+    const namebox=document.getElementById('name-box');
+    if (namebox){
+        namebox.textContent= speakerName || "主人公"; // 指定がなければ主人公のまま
+}
     currentMessage = messageArray;
     msgIndex = 0;
     charIndex = 0;
@@ -238,19 +245,25 @@ function updateplayer() {
     playerEl.style.top  = player.y + "px";
 }
 
-// アイテムを手に入れる
-function showItemImage(src){
+// アイテムを手に入れた後に画像を表示
+function showItemImage(src,showChoices=true){
     console.log("showItemImage呼び出し。画像パス:", src); 
     const popup = document.getElementById("itemPopup");
     const img = document.getElementById("itemImage");
+    const choiceBox = document.querySelector(".item-choice-btn");
 
     img.src = src;
     popup.classList.remove("hidden");
+// 選択肢がいらないアイテムがあるから両対応する。今は鍵の時にfalseを渡す
+     if(choiceBox){
+        choiceBox.style.display = showChoices ? "flex" : "none";
+    }
 }
 
 // アイテム名登録（ここにアイテムを追加していく）
 const itemName={
     "Indoor_shoes":"汚れた上履き",
+    "frist_key":"扉のカギ"
 };
 
 // ロッカーの開けた時の音
@@ -271,13 +284,6 @@ function saveInventory(){
 function loadInventory(){
     player.items = JSON.parse(localStorage.getItem("playerItems") || "[]");
 }
-// // アイテムのリストに保存復元
-// function saveInventory(){
-//     localStorage.setItem("playerItems", JSON.stringify(player.items));
-// }
-// function loadInventory(){
-//     player.items = JSON.parse(localStorage.getItem("playerItems") || "[]");
-// }
 
 // itemPopupを閉じる
 function closePopup(){
@@ -298,6 +304,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         keepBtn.addEventListener('click',()=>{
             score+=1;
             localStorage.setItem("score",score);
+            itemDecided=true;
             console.log("とっておくを選択。現在のスコア：",score);
             closePopup();
         });
@@ -307,6 +314,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         discardBtn.addEventListener("click",()=>{
             score-=1;
             localStorage.setItem("score",score);
+            itemDecided=true;
             console.log("捨てるを選択。現在のスコア：",score);
             closePopup();
         });

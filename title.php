@@ -72,6 +72,37 @@ $page = $_GET["page"] ?? "title";
          
         <script src="script.js"></script>
         <script src="stage1.js"></script> 
+
+    <?php elseif($page==="gamestage2"): ?>
+        <div class="gamestage" tabindex="0">
+            <img src="images/girl.png" class="stage-chara" alt="girl">
+            <div id="message-window" class="game-window">
+                <div id="name-box" class="game-name-box">主人公</div>
+                
+                <div id="game-message-box" class="game-message-box">
+                    <div id="next-arrow" class="next-arrow">▼</div>
+                </div>
+            </div>
+
+            <img src="images/help1.png" class="stage1-help" alt="???">
+
+            <div id="itemPopup" class="hidden">
+                <img id="itemImage" src="">
+                <div id="itemCloseBtn" class="item-close-btn">×</div>
+
+                <!-- 捨てるか取っておくかの選択肢のボタン -->
+                <div class="item-choice-btn">
+                    <button id="keepbtn">とっておく</button>
+                    <button id="discardbtn">すてる</button>
+                </div>
+            </div>
+
+        </div>
+
+         
+        <script src="script.js"></script>
+        <script src="stage2.js"></script> 
+
     <?php endif; ?>
 </body>
 </html>

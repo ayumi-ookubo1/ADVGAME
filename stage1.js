@@ -135,6 +135,33 @@ function handleLockerInteract(){
         return;
     }
 
+    // ステージ2に行くためのコード
+    if(checkSecondExitHit()){
+        if(itemDecided){ // 鍵(アイテム選択)が済んでいるときだけ反応させる
+            showMessage(secondExit.message, ()=>{
+                location.href = "?page=gamestart2"; // セリフが終わったらステージ2へ
+            });
+        }
+        return;
+    }
+
+    // 黒い人物の動き
+    if(helpcharaHit()){
+        if(!itemDecided){
+            showMessage(helpchara.beformessage,null,"???");
+        }
+        else{
+            showMessage(helpchara.aftermessage,async()=>{
+                console.log("stage1-finish");
+                const lines=await loadText("gotkey");
+                showMessage(lines,()=>{
+                    showItemImage("images/frist_key.png",false);
+                });
+            },"???");
+        }
+        return
+    }
+
     const index=checkLockerHit();
     if(index===-1)return;
 
@@ -157,11 +184,11 @@ function handleLockerInteract(){
             saveInventory();
         }  
         
+        // 主人公の名前が表示される
         showMessage([...L.message, getMsg],()=>{
             showItemImage("images/"+L.items+".png");
         }); 
         return;
-
     }
     if(!L.gotMessage){
         L.gotMessage = true;
@@ -186,9 +213,41 @@ function cheakDoorHit(){
     return hit;
 }
 
-// ↓確認用。終わったら削除する
+// ↓今どこの座標にいるかの確認用。終わったら削除する
 window.addEventListener("keydown",(e)=>{
     if(e.key === "p"){
         console.log("player.x:", player.x, "player.y:", player.y);
     }
 });
+
+// 黒い人物
+const helpchara={
+    x: 865, y:0, width: 110, height: 150,
+    beformessage: ["..."],
+    aftermessage:["見つけたんだね",
+        "──それが、君の選択だ。その気持ちを、忘れないで。",
+        "出口のカギだ。そこの扉が開ける。次へ進め。",
+    ]
+}
+function helpcharaHit(){
+    const hit=
+        player.x<helpchara.x+helpchara.width&&
+        player.x+player.width>helpchara.x&&
+        player.y<helpchara.y+helpchara.height&&
+        player.y+player.height>helpchara.y;
+    return hit;
+}
+
+// 次のステージに行く出口
+const secondExit = {
+    x: 1080, y: 480, width: 150, height: 200,
+    message: ["扉が開いた！"]
+};
+function checkSecondExitHit(){
+    const hit=
+        player.x<secondExit.x+secondExit.width&&
+        player.x+player.width>secondExit.x&&
+        player.y<secondExit.y+secondExit.height&&
+        player.y+player.height>secondExit.y;
+    return hit;
+}
