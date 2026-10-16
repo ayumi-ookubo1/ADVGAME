@@ -263,7 +263,8 @@ function showItemImage(src,showChoices=true){
 // アイテム名登録（ここにアイテムを追加していく）
 const itemName={
     "Indoor_shoes":"汚れた上履き",
-    "frist_key":"扉のカギ"
+    "frist_key":"扉のカギ",
+    "item_name":"アイテムの名前"
 };
 
 // ロッカーの開けた時の音
@@ -347,3 +348,26 @@ async function initPrologue(){
     const lines=await loadText("Prologue");
     showMessage(lines);
 }
+
+// 確認用: クリックした場所のゲーム座標を表示する(終わったら削除)
+document.addEventListener("click",(e)=>{
+    const stage = document.querySelector(".gamestage");
+    const rect = stage.getBoundingClientRect();
+    const scale = rect.width / 1280;   // 縮小率(縮んでいなければ1)
+    console.log(
+        "x:", Math.round((e.clientX - rect.left) / scale),
+        "y:", Math.round((e.clientY - rect.top) / scale)
+    );
+});
+
+// 確認用: 通れない範囲を赤枠で表示する(終わったら削除)
+window.addEventListener("DOMContentLoaded", ()=>{
+    const stage = document.querySelector(".gamestage");
+    noarea.forEach(w=>{
+        const box = document.createElement("div");
+        box.style.cssText =
+            `position:absolute; left:${w.x}px; top:${w.y}px; width:${w.width}px; height:${w.height}px;` +
+            `border:2px solid red; z-index:20; pointer-events:none;`;
+        stage.appendChild(box);
+    });
+});

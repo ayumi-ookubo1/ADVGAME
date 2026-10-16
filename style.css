@@ -85,14 +85,21 @@ body{
     100% { opacity: 1; }
 }
 
-/* プロローグ画面 */
+/* メイン画面 */
 /* 画面全体のサイズをプロローグと同じ1280x720 */
 .gamestage {
-    background-image: url('images/map2.png');
     width: 1280px;
     height: 720px;
     position: relative;
     overflow: visible;
+}
+
+.gamestage1{
+    background-image: url('images/map2.png');
+}
+
+.gamestage2{
+    background-image: url('images/map2-2.jpg');
 }
 /* セリフ枠全体 */
 .game-window {
@@ -169,6 +176,16 @@ body{
     width: auto;
     height: 200px;
 }
+
+.stage2-help{
+    position: absolute;
+    left: 1145px;
+    top: 515px;
+    z-index: 4;
+    width: auto;
+    height: 200px;
+}
+
 /* アイテムをゲットした時のポップアップ表示 */
 #itemPopup {
     position: fixed;
@@ -219,4 +236,13 @@ body{
 .item-choice-btn button{
     padding:6px 16px;
     cursor: pointer;
+}
+
+/* アイテム星 */
+.map-item {
+    position: absolute;
+    left: 200px;
+    top: 400px;
+    width: 100px;
+    z-index: 4;
 }

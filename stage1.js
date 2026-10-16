@@ -213,13 +213,6 @@ function cheakDoorHit(){
     return hit;
 }
 
-// ↓今どこの座標にいるかの確認用。終わったら削除する
-window.addEventListener("keydown",(e)=>{
-    if(e.key === "p"){
-        console.log("player.x:", player.x, "player.y:", player.y);
-    }
-});
-
 // 黒い人物
 const helpchara={
     x: 865, y:0, width: 110, height: 150,
@@ -251,3 +244,10 @@ function checkSecondExitHit(){
         player.y+player.height>secondExit.y;
     return hit;
 }
+
+// ↓今どこの座標にいるかの確認用。終わったら削除する
+window.addEventListener("keydown",(e)=>{
+    if(e.key === "p"){
+        console.log("player.x:", player.x, "player.y:", player.y);
+    }
+});
