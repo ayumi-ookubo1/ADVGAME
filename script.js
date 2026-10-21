@@ -233,7 +233,7 @@ function updateplayer() {
     if (keys["ArrowUp"])    player.y -= player.speed;
     if (keys["ArrowDown"])  player.y += player.speed;
 
-    player.x = Math.max(0, Math.min(1280 - player.width, player.x));
+    player.x = Math.max(0, Math.min(1280 - 40, player.x));
     player.y = Math.max(0, Math.min(720 - player.height, player.y));
 
     // 通れないところの当たり判定実装
@@ -264,7 +264,7 @@ function showItemImage(src,showChoices=true){
 const itemName={
     "Indoor_shoes":"汚れた上履き",
     "frist_key":"扉のカギ",
-    "item_name":"アイテムの名前"
+    "mapItem":"古びた学級日誌"
 };
 
 // ロッカーの開けた時の音

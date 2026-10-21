@@ -5,6 +5,8 @@ async function initgamestart2(){
     showMessage(lines);
 }
 
+let stage2Cleared = false;
+
 function blockstagearea() {
     // playerの範囲　当たり判定の四角形
     const pleft   = player.x-40;
@@ -36,13 +38,7 @@ function blockstagearea() {
         if (keys["ArrowUp"])    player.y = wBottom-player.height+30;
     }
 }
-// 黒い人物
-const helpchara={
-    x: 1145, y:515, width: 110, height: 150,
-    beformessage: ["..."],
-    aftermessage:[
-    ]
-}
+
 function helpcharaHit(){
     const hit=
         player.x<helpchara.x+helpchara.width&&
@@ -57,7 +53,7 @@ const desk=[
     {
         // 1行目の左
         x:165, y:287, width:87, height:104,       
-        message:["ただの机だ。"],
+        message:["机に落書きが書いてある。","...見なかったことにしよう。"],
         items:null,
         got:false,
         gotMessage:false 
@@ -68,7 +64,7 @@ const desk=[
         x:588,y:284,width:87,height:104,
         message:["ただの机だ。"],
         items:null,
-         got:false,
+        got:false,
         gotMessage:false 
      },
 
@@ -93,7 +89,7 @@ const desk=[
      {
         // 2行目の右
         x:814,y:473,width:87,height:104,
-         message:["ただの机だ。"],
+         message:["なんか8が書いてある。"],
         items:null,
         got:false,
         gotMessage:false 
@@ -103,7 +99,18 @@ const desk=[
         // 左の掲示板
         x:100,y:30,width:200,height:30,
          message:["クラスの集合写真が貼られている。",
-            "...よくみると小さく「４」と書かれている。"
+            "...よくみると小さく「４」と書かれている。なんのことだろう？"
+         ],
+        items:null,
+        got:false,
+        gotMessage:false 
+    },
+
+    {
+        // 右の掲示板
+        x:950,y:30,width:180,height:30,
+         message:["掲示板だ。何か書かれている。",
+            "「パスワードは四字熟語」「どれか一つは間違いだ。」と書かれている。","なんのパスワードだろう？"
          ],
         items:null,
         got:false,
@@ -115,26 +122,13 @@ const desk=[
         x:445,y:30,width:390,height:30,
          message:["日直と日付が書かれている。",
             "ところどころきれいに消せていない。きたねぇ黒板だ。",
-            "かすれて書かれているところに「９」が書かれていた。数学でもやってたのかな..."
+            "かすれて書かれているところを見ると「９」が書かれていた。数学でもやってたのかな..."
          ],
         items:null,
         got:false,
         gotMessage:false 
     },
 
-    {
-        // 出口
-        x:1210,y:30,width:80,height:80,
-        beformessage: ["また開かないんだが！",
-            "とにかく出る方法を探そう"
-        ],
-        aftermessage:["...",
-        ],
-        items:null,
-        got:false,
-        gotMessage:false 
-    },
-    
 ];
 function checkDeskHit() {
     const margin=10;
@@ -151,31 +145,36 @@ function checkDeskHit() {
     }
     return -1;
 }
+
+// 主人公が通れない場所
 const noarea=[
-    {x: 0, y:30, width: 1210, height:130},...desk// 黒板の前までしか歩けない
+    {x: 0, y:30, width: 1100, height:140},...desk,
+    // 黒板の前までしか歩けない
+    {x:1210, y:30, width:80, height:140} ,// 出口の範囲
+    {x: 1187, y:558, width: 110, height: 150}
 ];
 
 // マップ上のアイテム星
 const mapItem = {
-    x: 170, y: 200, width: 160, height: 160,   // 主人公が近づいて届く範囲を少し広めに
-    key: "item_name",                          // itemNameに登録するキー
+    x: 170, y: 500, width: 100, height: 100,   
+    key: "mapItem",                          
     got: false,
-    message: ["何かが落ちている…"]
+    message: ["何かが落ちている…","学級日誌だ。","中に小さなメモが入っていた","「先生□す□て、■■■にい□められている」"]
 };
 
 function mapItemHit(){
-    return player.x < mapItem.x + mapItem.width &&
-           player.x + player.width > mapItem.x &&
-           player.y < mapItem.y + mapItem.height &&
-           player.y + player.height > mapItem.y;
+    return  player.x < mapItem.x + mapItem.width &&
+            player.x + player.width > mapItem.x &&
+            player.y < mapItem.y + mapItem.height &&
+            player.y + player.height > mapItem.y;
 }
 
 // 黒い人物
 const helpchara2={
-    x: 1187, y:558, width: 110, height: 150,
+    x: 1185, y:560, width: 110, height: 150,
     beformessage: ["縺雁燕繧定ｨｱ縺輔↑縺�"],
     aftermessage:["見つけたんだね",
-            ]
+    ]
 }
 function helpchara2Hit(){
     const hit=
@@ -186,6 +185,27 @@ function helpchara2Hit(){
     return hit;
 }
 
+// 出口
+const exitDoor2={
+    x:1210,y:30,width:80,height:80,
+        beformessage: ["また開かないんだが！",
+            "とにかく出る方法を探そう"],
+        aftermessage:["...",
+        ],
+        items:null,
+        got:false,
+        gotMessage:false 
+}
+ 
+function exitDoor2Hit(){
+    const hit=
+        player.x<exitDoor2.x+exitDoor2.width&&
+        player.x+player.width>exitDoor2.x&&
+        player.y<exitDoor2.y+exitDoor2.height&&
+        player.y+player.height>exitDoor2.y;
+    return hit;
+}
+    
 // enterで反応させる
 function handleLockerInteract(){
     // 黒い人物
@@ -201,9 +221,19 @@ function handleLockerInteract(){
 
         showMessage([...mapItem.message, getMsg], ()=>{
             document.getElementById("mapItem").classList.add("hidden");  // マップ上の動画を消す
-            showItemImage("images/" + mapItem.key + ".png");              // ステージ1と同じポップアップ
+            showItemImage("images/note.png");    
+            stage2Cleared = true;    
         });
         return;
+    }
+
+    if(exitDoor2Hit()){
+        if(!stage2Cleared){    // ← 条件は後述
+        showMessage(exitDoor2.beformessage);
+    } else {
+        showMessage(exitDoor2.aftermessage);
+    }
+    return;
     }
 
     // 机
@@ -216,3 +246,9 @@ function handleLockerInteract(){
         showMessage(D.message);
     }
 }
+// 確認用: pキーで主人公の座標を表示(終わったら削除)
+window.addEventListener("keydown",(e)=>{
+    if(e.key === "p"){
+        console.log("player.x:", player.x, " player.y:", player.y, " 足元y:", player.y + player.height);
+    }
+});
