@@ -1,6 +1,7 @@
 // stage1を始めるための関数
 async function initgamestart1(){
     console.log("stage1-start");
+    playAudio("sounds/Carol_of_the_Bell.mp3");
     const lines=await loadText("gamestart1");// gamestart1のセリフ（json）を読み込む　awaitは読み込み終わるのを待つ
     showMessage(lines);
 }
@@ -11,36 +12,15 @@ const noarea=[
     {x: 0, y: 0, width: 1280, height:130}// ロッカーの前までしか歩けない
 ];
 
-function blockstagearea() {
-    // playerの範囲　当たり判定の四角形
+function isBlocked() {
     const pleft   = player.x;
     const pright  = player.x + player.width;
     const ptop    = player.y;
     const pbottom = player.y + player.height;
-
-    // 壁を1つずつ処理　壁にも当たり判定の四角形を作る
-    for (const w of noarea) {
-
-        const wLeft=w.x;
-        const wRight=w.x+ w.width;
-        const wTop=w.y;
-        const wBottom=w.y+ w.height;
-
-        // プレイヤーと壁の四角形が重なっているかどうかチェックする
-        const hit =
-            pleft < wRight &&
-            pright > wLeft &&
-            ptop < wBottom &&
-            pbottom > wTop;
-        // 重なってたらtrue,重なってなかったら何もしない。（進める）
-        if (!hit) continue;
-
-        // 重なった方向に応じて押し戻す
-        if (keys["ArrowRight"]) player.x = wLeft - player.width;
-        if (keys["ArrowLeft"])  player.x = wRight;
-        if (keys["ArrowDown"])  player.y = wTop - player.height;
-        if (keys["ArrowUp"])    player.y = wBottom;
-    }
+    return noarea.some(w =>
+        pleft < w.x + w.width && pright > w.x &&
+        ptop < w.y + w.height && pbottom > w.y
+    );
 }
 
 // ロッカーの座標と、メッセージとアイテムとゲットしたかどうか
@@ -54,8 +34,8 @@ const locker=[
     },
     {
         x:110,y:0,width:110,height:150,
-        message:["開かない..."],
-        items:null,
+        message:["なにかはいってる!","くしゃくしゃになったメモが入っていた。","「全部あいつのせいで、、学校行きたくないな...」と書かれている。"],
+        items:"memo",
         got:false,
         gotMessage:false 
     },
@@ -89,8 +69,8 @@ const locker=[
     },
     {
         x:660,y:0,width:110,height:150,
-        message:["開かない..."],
-        items:null,
+        message:["何か入ってる！","新聞紙の切り抜きが入っていた。","日付を見て、手が止まった。","この日は..."],
+        items:"newspaper",
         got:false,
         gotMessage:false 
     },
@@ -103,23 +83,30 @@ const locker=[
     },
 ];
 
+// 話しかけ用の判定：見た目のキャラの真ん中あたりだけを使う
+function hitTalk(o){
+    const left   = player.x - 20;
+    const right  = player.x + 20;
+    const top    = player.y;
+    const bottom = player.y + player.height;
+    return left < o.x + o.width && right > o.x &&
+           top < o.y + o.height && bottom > o.y;
+}
+
 function checkLockerHit() {
     for (let i = 0; i < locker.length; i++) {
-        const L = locker[i];
-
-        const hit =
-            player.x < L.x + L.width &&
-            player.x + player.width > L.x &&
-            player.y < L.y + L.height &&
-            player.y + player.height > L.y;
-
-        if (hit) return i;
+        if (hitTalk(locker[i])) return i;
     }
     return -1;
 }
 
+function helpcharaHit(){
+    return hitTalk(helpchara);
+}
+
 // ストーリー上ドアを調べてからロッカーを調べてもらいたいのでドアを先に確認させる
 let doorchecked=false;
+let gotkey=false;
 
 function handleLockerInteract(){
     if(cheakDoorHit()){
@@ -137,22 +124,29 @@ function handleLockerInteract(){
 
     // ステージ2に行くためのコード
     if(checkSecondExitHit()){
-        if(itemDecided){ // 鍵(アイテム選択)が済んでいるときだけ反応させる
+        if(gotkey){ // 鍵もらったときだけ反応させる
             showMessage(secondExit.message, ()=>{
                 location.href = "?page=gamestart2"; // セリフが終わったらステージ2へ
             });
-        }
+        }else{
+                showMessage(["ここにも扉がある。","鍵があれば出られそうかも...？"]);
+            }
         return;
     }
 
     // 黒い人物の動き
     if(helpcharaHit()){
-        if(!itemDecided){
+        if(!itemDecided || !player.items.includes("newspaper")){
             showMessage(helpchara.beformessage,null,"???");
         }
         else{
+            if(gotkey){
+                showMessage(["もう渡すものはない。"],null,"???");
+                return;
+            }
             showMessage(helpchara.aftermessage,async()=>{
                 console.log("stage1-finish");
+                gotkey=true;
                 const lines=await loadText("gotkey");
                 showMessage(lines,()=>{
                     showItemImage("images/frist_key.png",false);
@@ -199,7 +193,7 @@ function handleLockerInteract(){
 // 水色のマット（入口）
 const exitDoor={
     x: 0, y: 330, width: 90, height: 130,
-    message: ["あれ？鍵が壊れてて出られない！",
+    message: ["あれ？扉があかない！",
         "困ったな...とりあえずここ以外で出られる方法を探すか"
     ]
 }
@@ -215,26 +209,18 @@ function cheakDoorHit(){
 
 // 黒い人物
 const helpchara={
-    x: 865, y:0, width: 110, height: 150,
+    x: 865, y:0, width:95, height: 150,
     beformessage: ["..."],
     aftermessage:["見つけたんだね",
         "──それが、君の選択だ。その気持ちを、忘れないで。",
         "出口のカギだ。そこの扉が開ける。次へ進め。",
     ]
 }
-function helpcharaHit(){
-    const hit=
-        player.x<helpchara.x+helpchara.width&&
-        player.x+player.width>helpchara.x&&
-        player.y<helpchara.y+helpchara.height&&
-        player.y+player.height>helpchara.y;
-    return hit;
-}
 
 // 次のステージに行く出口
 const secondExit = {
     x: 1080, y: 480, width: 150, height: 200,
-    message: ["扉が開いた！"]
+    message: ["扉が開いた！"],
 };
 function checkSecondExitHit(){
     const hit=
@@ -251,3 +237,8 @@ window.addEventListener("keydown",(e)=>{
         console.log("player.x:", player.x, "player.y:", player.y);
     }
 });
+
+// // "古い新聞の切り抜きが入っていた。",
+// "日付を見て、手が止まった。",
+// "...この日を、私は知っている。",
+// "事情を聴かれた生徒って..."

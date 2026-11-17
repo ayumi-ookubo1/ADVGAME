@@ -14,6 +14,7 @@ let itemDecided=false;
 // BGM
 let BGMAudio=null;
 
+// 音楽
 function playAudio(src,volume=0.3){
     if(BGMAudio){
         BGMAudio.pause();
@@ -22,7 +23,9 @@ function playAudio(src,volume=0.3){
     BGMAudio=new Audio(src);
     BGMAudio.loop=true;
     BGMAudio.volume=volume;
-    BGMAudio.play();
+    BGMAudio.play().catch(()=>{
+        console.log("自動再生ブロック: 最初のキー入力で鳴らします");
+    });
 }
 
 const player={
@@ -33,6 +36,27 @@ const player={
     height:160,
     items:[]
 };
+
+const playerImages={
+    up:"images/girl-top.png",
+    down:"images/girl.png",
+    left:"images/girl-left.png",
+    right:"images/girl-right.png"
+};
+
+let playerDir="down";// 今向いている向き
+let walkCount=0;// 歩いたフレーム
+
+// 画像が変わる時だけ差し替える毎回フレーム変えると、ちらつくため
+function setupPlayerImage(src){
+    if(!playerEl)return;
+    if(!playerEl.src.endsWith(src))playerEl.src=src;
+}
+
+// 画像を先に読み込んでおく（初めて切り替わるときの一瞬の空白を防ぐ）
+Object.values(playerImages).forEach(src=>{
+    new Image().src=src;
+});
 
 let playerEl = null;
 const keys = {};
@@ -50,7 +74,6 @@ function initCommon(){
     setupKeyInput();
     startGameLoop();
 
-    playAudio("sounds/Carol_of_the_Bell.mp3");
     // phpファイルのURLで判断して自動でステージ移動する
     const page=new URLSearchParams(location.search).get("page");
 
@@ -76,7 +99,16 @@ function setupPlayer(){
 // キー入力
 function setupKeyInput() {
    window.addEventListener("keydown",(e)=>{
+    // 矢印キーでページがスクロールしないようにする
+    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault();
+    // キーを押しっぱなしにしたときの連続入力を無視する
+    if(e.repeat) return;
     keys[e.key]=true;
+
+    // ブロックされていたBGMを、最初のキー入力で鳴らす
+    if(BGMAudio && BGMAudio.paused){
+        BGMAudio.play().catch(()=>{});
+    }
 
     if(e.key==="Enter"){
         e.preventDefault();
@@ -86,6 +118,8 @@ function setupKeyInput() {
         nextMessage();
         return;
         }   
+
+
      // メッセージ表示中でなければロッカー判定を行う
     if (typeof handleLockerInteract === "function") {
         handleLockerInteract();
@@ -225,24 +259,35 @@ function nextMessage() {
 // ===== プレイヤー処理 ========
 function updateplayer() {
     if (!playerEl) return;
-    if(isMessageActive)return; // メッセージ中はキャラを動かさない
+    if (isMessageActive) return;   // メッセージ中は動かさない
+    if (isPopupOpen()) return;     // ポップアップ中も動かさない
 
-    // x=左右 y=上下に動く
-    if (keys["ArrowLeft"])  player.x -= player.speed;
-    if (keys["ArrowRight"]) player.x += player.speed;
-    if (keys["ArrowUp"])    player.y -= player.speed;
-    if (keys["ArrowDown"])  player.y += player.speed;
+    let dx = 0, dy = 0;
+    if (keys["ArrowLeft"])  { dx -= player.speed; playerDir = "left"; }
+    if (keys["ArrowRight"]) { dx += player.speed; playerDir = "right"; }
+    if (keys["ArrowUp"])    { dy -= player.speed; playerDir = "up"; }
+    if (keys["ArrowDown"])  { dy += player.speed; playerDir = "down"; }
+
+    // 横に動かして、壁に当たったら元に戻す
+    player.x += dx;
+    if (typeof isBlocked === "function" && isBlocked()) player.x -= dx;
+
+    // 縦に動かして、壁に当たったら元に戻す
+    player.y += dy;
+    if (typeof isBlocked === "function" && isBlocked()) player.y -= dy;
 
     player.x = Math.max(0, Math.min(1280 - 40, player.x));
     player.y = Math.max(0, Math.min(720 - player.height, player.y));
 
-    // 通れないところの当たり判定実装
-    if (typeof blockstagearea === "function") {
-        blockstagearea();
-    }
-    // キャラのcssのleft,topを更新して動かしてる
+    setupPlayerImage(playerImages[playerDir]);
     playerEl.style.left = player.x + "px";
     playerEl.style.top  = player.y + "px";
+}
+
+// ポップアップが開いているか
+function isPopupOpen() {
+    const popup = document.getElementById("itemPopup");
+    return popup && !popup.classList.contains("hidden");
 }
 
 // アイテムを手に入れた後に画像を表示
@@ -264,7 +309,8 @@ function showItemImage(src,showChoices=true){
 const itemName={
     "Indoor_shoes":"汚れた上履き",
     "frist_key":"扉のカギ",
-    "mapItem":"古びた学級日誌"
+    "mapItem":"古びた学級日誌",
+    "newspaper":"古い新聞の切り抜き"
 };
 
 // ロッカーの開けた時の音
@@ -349,25 +395,25 @@ async function initPrologue(){
     showMessage(lines);
 }
 
-// 確認用: クリックした場所のゲーム座標を表示する(終わったら削除)
-document.addEventListener("click",(e)=>{
-    const stage = document.querySelector(".gamestage");
-    const rect = stage.getBoundingClientRect();
-    const scale = rect.width / 1280;   // 縮小率(縮んでいなければ1)
-    console.log(
-        "x:", Math.round((e.clientX - rect.left) / scale),
-        "y:", Math.round((e.clientY - rect.top) / scale)
-    );
-});
+// // 確認用: クリックした場所のゲーム座標を表示する(終わったら削除)
+// document.addEventListener("click",(e)=>{
+//     const stage = document.querySelector(".gamestage");
+//     const rect = stage.getBoundingClientRect();
+//     const scale = rect.width / 1280;   // 縮小率(縮んでいなければ1)
+//     console.log(
+//         "x:", Math.round((e.clientX - rect.left) / scale),
+//         "y:", Math.round((e.clientY - rect.top) / scale)
+//     );
+// });
 
 // 確認用: 通れない範囲を赤枠で表示する(終わったら削除)
-window.addEventListener("DOMContentLoaded", ()=>{
-    const stage = document.querySelector(".gamestage");
-    noarea.forEach(w=>{
-        const box = document.createElement("div");
-        box.style.cssText =
-            `position:absolute; left:${w.x}px; top:${w.y}px; width:${w.width}px; height:${w.height}px;` +
-            `border:2px solid red; z-index:20; pointer-events:none;`;
-        stage.appendChild(box);
-    });
-});
+//   window.addEventListener("DOMContentLoaded", ()=>{
+//       const stage = document.querySelector(".gamestage");
+//      noarea.forEach(w=>{
+//           const box = document.createElement("div");
+//           box.style.cssText =
+//               `position:absolute; left:${w.x}px; top:${w.y}px; width:${w.width}px; height:${w.height}px;` +
+//               `border:2px solid red; z-index:20; pointer-events:none;`;
+//           stage.appendChild(box);
+//       });
+//   });

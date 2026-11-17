@@ -1,7 +1,7 @@
 <!-- http://localhost/mygame/ADVGAME/title.php で開く-->
 <?php
 // ページの切り替え設定
-$page = $_GET["page"] ?? "title";
+$page = $_GET["page"] ?? "warning";
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -15,19 +15,60 @@ $page = $_GET["page"] ?? "title";
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Nosifer&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <?php if($page === "title"): ?>
-        <div onclick="location.href='?page=Prologue'" class="title" style="cursor: pointer;">
+    <?php if($page === "warning"): ?>
+        <div class="warning">
+            <p class="warning-title">⚠ ご注意ください</p>
+            <p>このゲームには、いじめや死に関する表現が含まれます。</p>
+            <p>画面の揺れや、文字の点滅の演出もあります。</p>
+            <p>気分が悪くなったら、無理せずプレイを中断してください。</p>
+            <p id="warning-press" class="warning-press" style="visibility:hidden;">Press Enter</p>
+        </div>
+        <script>
+            let ready=false;
+            // 3秒たつまで進めない（注意書きを読んでもらうため）
+            setTimeout(()=>{
+                ready=true;
+                document.getElementById("warning-press").style.visibility="visible";
+            },3000);
+
+            function goTitle(){
+                if(!ready) return;
+                location.href='?page=title';
+            }
+            window.addEventListener('keydown',(e)=>{
+                if(e.key==='Enter') goTitle();
+            });
+            document.addEventListener('click',goTitle);
+        </script>
+
+    <?php elseif($page === "title"): ?>
+        <div onclick="startGame()" class="title" style="cursor: pointer;">
             <h1>あの日をもう一度</h1>
             <p>Press Enter to start</p>
             <script> // エンター押したらプロローグの画面に移行してねという意味
+                let started=false;
+
+                function startGame(){
+                    if(started) return;
+                    started=true;
+                    localStorage.removeItem("score");
+                    // 新しく始めるたびに０からスタート
+                    const se=new Audio("sounds/horrific_blow1.mp3");
+                    se.play();
+                    setTimeout(()=>{
+                        location.href='?page=Prologue';
+                    },3000);
+                }
+
                 window.addEventListener('keydown',(e=>{
                     if(e.key==='Enter'){
-                        location.href='?page=Prologue';
+                        if(e.key==='Enter')startGame();
                     }
                 }));
             </script>
         </div>
-
+    
+    <!--プロローグ-->
     <?php elseif($page === "Prologue"): ?>
         <div class="prologue-panel" style="background-color: black; width: 1280px; height: 720px; position: relative;">
             
@@ -43,6 +84,7 @@ $page = $_GET["page"] ?? "title";
         
         <script src="script.js"></script>
 
+    <!-- ステージ1 -->
     <?php elseif ($page === "gamestart1"): ?>
         <div class="gamestage gamestage1" tabindex="0">
             <img src="images/girl.png" class="stage-chara" alt="girl">
@@ -68,9 +110,10 @@ $page = $_GET["page"] ?? "title";
             </div>
         </div>
  
-        <script src="script.js"></script>
-        <script src="stage1.js"></script> 
+        <script src="script.js?v=<?= filemtime(__DIR__.'/script.js') ?>"></script>
+        <script src="stage1.js?v=<?= filemtime(__DIR__.'/stage1.js') ?>"></script> 
 
+    <!-- ステージ2 -->
     <?php elseif($page==="gamestart2"): ?>
         <div class="gamestage gamestage2" tabindex="0">
             <img src="images/girl.png" class="stage-chara" alt="girl">
@@ -95,13 +138,33 @@ $page = $_GET["page"] ?? "title";
                 <button id="discardbtn">すてる</button>
             </div>
         </div>
-        <img id="mapItem" src="images/hosi-anime4.gif" class="map-item">
+        <div id="password-box" class="hidden">
+            <button onclick="answerPassword(false)">4899</button>
+            <button onclick="answerPassword(true)">4989</button>  <!-- 正解 -->
+                <button onclick="answerPassword(false)">4978</button>
+            </div>
+            <img id="mapItem" src="images/hosi-anime4.gif" class="map-item">
+            <img src="images/flower.png" alt="flower" id="flower" class="flower">
+
         </div>
 
+        <div id="horror" class="hidden"></div>
          
-    <script src="script.js"></script>
-    <script src="stage2.js"></script> 
+    <script src="script.js?v=<?= filemtime(__DIR__.'/script.js') ?>"></script>
+    <script src="stage2.js?v=<?= filemtime(__DIR__.'/stage2.js') ?>"></script> 
 
-    <?php endif; ?>
+    <!-- エンディングページ -->
+    <?php elseif($page === "ending1" || $page === "ending2"): ?>
+    <div class="prologue-panel" style="background-color: black; width: 1280px; height: 720px; position: relative;">
+        <div id="message-window" style="display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px;">
+            <div id="prologue-message-box" style="color: white; padding: 40px; font-size: 24px; min-height: 100px; text-align: center; line-height: 1.8; position: relative;">
+            </div>
+            <div id="next-arrow" class="next-arrow" style="display: none; position: absolute; bottom: 0; right: 40px; color: white;">▼</div>
+        </div>
+    </div>
+
+    <script src="script.js?v=<?= filemtime(__DIR__.'/script.js') ?>"></script>
+    <script src="ending.js?v=<?= filemtime(__DIR__.'/ending.js') ?>"></script>
+<?php endif; ?>
 </body>
 </html>

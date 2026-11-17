@@ -27,6 +27,38 @@
   font-style: normal;
 }
 
+/* ローディング画面 */
+.warning{
+    width:1280px; height:720px;
+    display:flex; flex-direction:column;
+    justify-content:center; align-items:center;
+    gap:24px;
+    background:#000;
+    color:#ddd;
+    font-family:'DotGothic16',sans-serif;
+    font-size:26px; line-height:1.8; text-align:center;
+    animation:fadein 2s;
+}
+.warning-title{
+    color:#b30000;
+    font-size:36px;
+    letter-spacing:6px;
+}
+.warning-help{
+    font-size:20px;
+    color:#999;
+}
+.warning-press{
+    margin-top:30px;
+    font-size:20px;
+    animation:blink 1.2s infinite alternate;
+}
+@keyframes fadein{
+    from{ opacity:0; }
+    to{ opacity:1; }
+}
+
+/* タイトル */
 .title{
     color: red;
     height: 100vh;
@@ -39,6 +71,18 @@
     flex-direction: column;
     gap: 20px;
     font-family:"nosifer", "DotGothic16",sans-serif;
+    background:radial-gradient(ellipse at center,#2a0000 0%,#000 70%);   /* 中心がうっすら赤い黒 */
+    width:1280px; height:720px;  
+}
+
+.title h1{
+    font-family:'DotGothic16',sans-serif;
+    font-size:72px;
+    letter-spacing:12px;
+    color:#b30000;
+    text-shadow:0 0 12px #600, 0 0 30px #300;     /* ぼんやり赤く光る */
+    animation:titleflicker 4s infinite;
+    position:relative; z-index:2;
 }
 
 body{
@@ -96,10 +140,12 @@ body{
 
 .gamestage1{
     background-image: url('images/map2.png');
+    background-size: 100% 100%;
 }
 
 .gamestage2{
     background-image: url('images/map2-2.jpg');
+    background-size: 100% 100%;
 }
 /* セリフ枠全体 */
 .game-window {
@@ -203,6 +249,8 @@ body{
 
 #itemPopup img {
     width: 400px; /* 好きなサイズに調整してOK */
+    max-height: 300px;
+    object-fit: contain;/* 縦横比を保ったまま枠に収める */
 }
 /* アイテム画像の右上にある×のボタン */
 .item-close-btn {
@@ -245,4 +293,75 @@ body{
     top: 500px;
     width: 100px;
     z-index: 4;
+}
+
+#password-box{
+    display:flex; flex-direction:column;
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%);  
+    z-index:30;
+    background-color: #0d0d0d;
+    color: #b30000;
+    font-family: 'Silkscreen', sans-serif;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-decoration: none;
+    border: 1px solid #5a0000;
+    box-shadow: 0 0 10px rgba(179, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+#password-box button{
+    background-color: #0d0d0d;
+    color: #b30000;
+    border: 1px solid #5a0000;
+    padding: 50px 70px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+}
+
+#password-box button:hover{
+    background-color:#300000;
+    color:#ff3333;
+    border-color: #5a0000;
+}
+
+#password-box.hidden{ display:none; }
+
+/* ステージ2の花 */
+#flower{
+    z-index: 5;
+    width: 40px;
+    position: absolute;
+    top: 425px;
+    left:365px;
+}
+
+.horror-layer{
+    position:absolute; left:0; top:0; width:100%; height:100%;
+    background:#000;          /* ← rgba(0,0,0,0.85) から変更。完全な黒にして、マップを隠す */
+    z-index:100;              /* ← 念のため大きくして、キャラや枠より前に出す */
+    overflow:hidden;
+}
+.horror-layer span{
+    position:absolute;
+    color:#e00;
+    font-weight:bold;
+    font-family:'DotGothic16',sans-serif;   /* すでに読み込んでいるフォント */
+}
+.shake{ animation:shake .08s infinite; }
+@keyframes shake{
+    0%{transform:translate(0,0)}
+    50%{transform:translate(4px,-3px)}
+    100%{transform:translate(-4px,3px)}
+}
+
+@keyframes titleflicker{
+    0%,100%{ opacity:1; }
+    50%{ opacity:1; }
+    55%{ opacity:0.4; }
+    60%{ opacity:1; }
+    80%{ opacity:0.7; }
 }
