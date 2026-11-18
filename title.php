@@ -1,8 +1,5 @@
 <!-- http://localhost/mygame/ADVGAME/title.php で開く-->
-<?php
-// ページの切り替え設定
-$page = $_GET["page"] ?? "warning";
-?>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -15,14 +12,13 @@ $page = $_GET["page"] ?? "warning";
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Nosifer&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <?php if($page === "warning"): ?>
-        <div class="warning">
-            <p class="warning-title">⚠ ご注意ください</p>
-            <p>このゲームには、いじめや死に関する表現が含まれます。</p>
-            <p>画面の揺れや、文字の点滅の演出もあります。</p>
-            <p>気分が悪くなったら、無理せずプレイを中断してください。</p>
-            <p id="warning-press" class="warning-press" style="visibility:hidden;">Press Enter</p>
-        </div>
+    <div class="warning">
+        <p class="warning-title">⚠ ご注意ください</p>
+        <p>このゲームには、いじめや死に関する表現が含まれます。</p>
+        <p>画面の揺れや、文字の点滅の演出もあります。</p>
+        <p>気分が悪くなったら、無理せずプレイを中断してください。</p>
+        <p id="warning-press" class="warning-press" style="visibility:hidden;">Press Enter</p>
+    </div>
         <script>
             let ready=false;
             // 3秒たつまで進めない（注意書きを読んでもらうため）
@@ -41,7 +37,6 @@ $page = $_GET["page"] ?? "warning";
             document.addEventListener('click',goTitle);
         </script>
 
-    <?php elseif($page === "title"): ?>
         <div onclick="startGame()" class="title" style="cursor: pointer;">
             <h1>あの日をもう一度</h1>
             <p>Press Enter to start</p>
@@ -69,10 +64,9 @@ $page = $_GET["page"] ?? "warning";
         </div>
     
     <!--プロローグ-->
-    <?php elseif($page === "Prologue"): ?>
-        <div class="prologue-panel" style="background-color: black; width: 1280px; height: 720px; position: relative;">
+    <div class="prologue-panel" style="background-color: black; width: 1280px; height: 720px; position: relative;">
             
-            <div id="message-window" style="display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px;">
+        <div id="message-window" style="display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px;">
                 
             <!-- プロローグのメッセージの部分 -->
                 <div id="prologue-message-box" style="color: white; padding: 40px; font-size: 24px; min-height: 100px; cursor: pointer; text-align: center; line-height: 1.8; position: relative;">
@@ -85,7 +79,6 @@ $page = $_GET["page"] ?? "warning";
         <script src="script.js"></script>
 
     <!-- ステージ1 -->
-    <?php elseif ($page === "gamestart1"): ?>
         <div class="gamestage gamestage1" tabindex="0">
             <img src="images/girl.png" class="stage-chara" alt="girl">
             <div id="message-window" class="game-window">
@@ -110,11 +103,10 @@ $page = $_GET["page"] ?? "warning";
             </div>
         </div>
  
-        <script src="script.js?v=<?= filemtime(__DIR__.'/script.js') ?>"></script>
-        <script src="stage1.js?v=<?= filemtime(__DIR__.'/stage1.js') ?>"></script> 
+        <script src="script.js"></script>
+        <script src="stage1.js"></script> 
 
     <!-- ステージ2 -->
-    <?php elseif($page==="gamestart2"): ?>
         <div class="gamestage gamestage2" tabindex="0">
             <img src="images/girl.png" class="stage-chara" alt="girl">
             <div id="message-window" class="game-window">
@@ -150,11 +142,10 @@ $page = $_GET["page"] ?? "warning";
 
         <div id="horror" class="hidden"></div>
          
-    <script src="script.js?v=<?= filemtime(__DIR__.'/script.js') ?>"></script>
-    <script src="stage2.js?v=<?= filemtime(__DIR__.'/stage2.js') ?>"></script> 
+    <script src="script.js"></script>
+    <script src="stage2.js"></script> 
 
     <!-- エンディングページ -->
-    <?php elseif($page === "ending1" || $page === "ending2"): ?>
     <div class="prologue-panel" style="background-color: black; width: 1280px; height: 720px; position: relative;">
         <div id="message-window" style="display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px;">
             <div id="prologue-message-box" style="color: white; padding: 40px; font-size: 24px; min-height: 100px; text-align: center; line-height: 1.8; position: relative;">
@@ -163,8 +154,7 @@ $page = $_GET["page"] ?? "warning";
         </div>
     </div>
 
-    <script src="script.js?v=<?= filemtime(__DIR__.'/script.js') ?>"></script>
-    <script src="ending.js?v=<?= filemtime(__DIR__.'/ending.js') ?>"></script>
-<?php endif; ?>
+    <script src="script.js"></script>
+    <script src="ending.js"></script>
 </body>
 </html>

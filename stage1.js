@@ -48,7 +48,7 @@ const locker=[
     },
     {
         x:330,y:0,width:110,height:150,
-        message:["ん？何か入ってる!"],
+        message:["ん？何か入ってる!","上履きが入っている。内履きの割に結構汚れている..."],
         items:"Indoor_shoes",
         got:false,
         gotMessage:false 

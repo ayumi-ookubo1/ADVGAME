@@ -340,7 +340,7 @@ function closePopup(){
 document.addEventListener("DOMContentLoaded",()=>{
     const closeBtn=document.getElementById("itemCloseBtn");
     if(closeBtn){
-        closeBtn.addEventListener("click",closePopup);
+        closeBtn.style.display=showChoices ? "none":"flex";
     }
 
     // 画像の下に選択肢ボタン

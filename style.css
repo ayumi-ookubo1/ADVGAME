@@ -365,3 +365,14 @@ body{
     60%{ opacity:1; }
     80%{ opacity:0.7; }
 }
+
+/* ending */
+.gamestage3{
+    background: linear-gradient(#5a3a3a, #1a1010);   /* 仮の背景（暗い夕焼け色） */
+}
+/* 屋上の画像ができたら、上の背景を消して、次の2行に変える
+.gamestage3{
+    background-image: url('images/rooftop.png');
+    background-size: 100% 100%;
+}
+*/
