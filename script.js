@@ -296,11 +296,15 @@ function showItemImage(src,showChoices=true){
     const popup = document.getElementById("itemPopup");
     const img = document.getElementById("itemImage");
     const choiceBox = document.querySelector(".item-choice-btn");
+    const closeBtn=document.getElementById("itemCloseBtn")
 
     img.src = src;
     popup.classList.remove("hidden");
-// 選択肢がいらないアイテムがあるから両対応する。今は鍵の時にfalseを渡す
-     if(choiceBox){
+    // 選択肢があるときは×を隠して、必ず選ばせる（鍵のように選択肢がないときだけ×を出す）
+    if(closeBtn){
+        closeBtn.style.display = showChoices ? "none" : "flex";
+    }
+    if(choiceBox){
         choiceBox.style.display = showChoices ? "flex" : "none";
     }
 }
@@ -340,7 +344,7 @@ function closePopup(){
 document.addEventListener("DOMContentLoaded",()=>{
     const closeBtn=document.getElementById("itemCloseBtn");
     if(closeBtn){
-        closeBtn.style.display=showChoices ? "none":"flex";
+         closeBtn.addEventListener("click",closePopup);
     }
 
     // 画像の下に選択肢ボタン
