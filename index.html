@@ -162,7 +162,7 @@
 <!-- ===== ページ切り替え（PHPの代わり） ===== -->
 <script>
 (function(){
-    const VER = "1";   // ファイルを更新したら数字を変えると、古い版が残らない
+    const VER = "2";   // ファイルを更新したら数字を変えると、古い版が残らない
     const page = new URLSearchParams(location.search).get("page") || "warning";
     const key  = (page === "ending1" || page === "ending2") ? "ending" : page;
 
@@ -186,7 +186,20 @@
         document.write('<script src="' + s + '?v=' + VER + '"><\/script>');
     });
 })();
+
+// <!-- ===== 画面の大きさに合わせて、ゲーム全体を拡大・縮小する ===== -->
+
+    function fitGame(){
+        const W = 1280;                                              // ゲーム画面の幅
+        const hasStage = document.querySelector(".gamestage");       // ステージはセリフ枠が下にはみ出す
+        const H = hasStage ? 720 + 190 + 20 : 720 + 20;              // 必要な高さ（余白20px込み）
+        const scale = Math.min(1, window.innerWidth / W, window.innerHeight / H);
+        document.documentElement.style.zoom = scale;
+    }
+    window.addEventListener("resize", fitGame);
+    fitGame();
 </script>
 
 </body>
+
 </html>
